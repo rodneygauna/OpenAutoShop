@@ -1,0 +1,41 @@
+import mongoose from "mongoose";
+
+import {
+  requiredStringMaxLength,
+  optionalStringMaxLength,
+  requiredPhoneNumber,
+  requiredEnum,
+  optionalEnum,
+} from "../utils/validation/validationConstants.js";
+
+const userSchema = new mongoose.Schema(
+  {
+    // User Demographics
+    first_name: requiredStringMaxLength("First name", 255),
+    middle_name: optionalStringMaxLength(255),
+    last_name: requiredStringMaxLength("Last name", 255),
+    suffix: optionalEnum(["Jr", "Sr", "I", "II", "III", "IV", "V"]),
+    // User Contact Information
+    phone_number: requiredPhoneNumber(),
+    // User Email and Password Hash
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      lowercase: true,
+    },
+    password_hash: requiredStringMaxLength("Password hash", 1024),
+    // User Status
+    is_active: {
+      type: Boolean,
+      default: true,
+    },
+    // User Type
+    user_type: requiredEnum("User type", ["User", "Super User", "Admin"]),
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export default mongoose.model("User", userSchema);
